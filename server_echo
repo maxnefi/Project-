@@ -1,0 +1,87 @@
+#include <stdio.h>
+
+#include <stdlib.h>
+
+#include <netdb.h>
+
+#include <string.h>
+
+#include <sys/types.h>
+
+#include <sys/socket.h>
+
+#include <netinet/in.h>
+
+
+
+
+
+int main()
+
+{
+
+	char server_message[256] = "Cliente conectado ao servidor com sucesso!";
+
+
+
+	int server_socket, client_socket;
+
+	// criação do servidor
+
+	server_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+	//especificando a estrutura server_address
+
+	struct sockaddr_in server_address;
+
+	server_address.sin_family = AF_INET;
+
+	server_address.sin_port = htons(9002);
+
+	server_address.sin_addr.s_addr = INADDR_ANY; //INADDR_ANY pega qualquer ip na maquina local, assim não é preciso especificar
+
+
+
+	//a função bind(vincular), vincula um ip e portas ao socket em questão, especifica onde o socket vai listen(ouvir, procurar) por conexões
+
+	bind(server_socket, (struct sockaddr*) &server_address, sizeof(server_address));
+
+
+
+	//a função listen(escuta ou procura) por conexões, recebe dois parametros
+
+	//primeiro, o socket que esta sendo usado para o servidor
+
+	//segundo, um backlog que vai dizer quantas conexões podem ficar esperando por esse socket(server_socket)
+
+	listen(server_socket, 5);
+
+	//aceitando a conexão de um cliente e armazenando em uma variavel que vai pode ser usada para enviar dados para o client side
+
+	client_socket = accept(server_socket, NULL, NULL);
+
+//comentários serão adicionados em breve sobre essa parte 
+
+	while(1)
+
+	{
+
+		bzero(server_message, 256);
+
+		read(client_socket, server_message, 256);
+
+		printf("Echoing back - %s", server_message);
+
+		write(client_socket, server_message, strlen(server_message)+1);
+
+
+
+	}
+
+
+
+	
+
+	return 0;
+
+}
