@@ -1,0 +1,80 @@
+#include <stdio.h>
+
+#include <stdlib.h>
+
+#include <string.h>
+
+#include <sys/types.h>
+
+#include <sys/socket.h>
+
+#include <netinet/in.h>
+
+#include <netdb.h>
+
+
+
+int main()
+
+{
+
+	int network_socket, connection_status;
+
+	char sendline[256];
+
+	char recvline[256];
+
+	//criação do socket
+
+	network_socket = socket(AF_INET, SOCK_STREAM,0);
+
+
+
+	//especificando um endereço para o socket
+
+	//essa estrutura armazena o endereço ip e numero da porta
+
+	struct sockaddr_in server_address;
+
+	server_address.sin_family = AF_INET;
+
+	server_address.sin_port= htons(9002);
+
+	server_address.sin_addr.s_addr = INADDR_ANY;  //INADDR_ANY pega qualquer ip na maquina local, assim não é preciso especificar
+
+	
+
+	connection_status = connect(network_socket, (struct sockaddr *) &server_address, sizeof(server_address));
+
+	//verificando se houve erro com a conexão
+
+	if(connection_status==-1)
+
+	{
+
+		printf("Houve um erro com a conexao do socket remoto\n");
+
+	}
+  //Comentários serão adicionados em breve sobre essa parte
+	while(1)
+
+	{
+
+		bzero(sendline, 256);
+
+		bzero(recvline, 256);
+
+		fgets(sendline, 256, stdin);
+
+		write (network_socket, sendline, strlen(sendline)+1);
+
+		read(network_socket, recvline, 256);
+
+		printf("%s", recvline);
+
+	}
+
+	return 0;
+
+}
+
