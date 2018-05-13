@@ -1,0 +1,60 @@
+#include <stdio.h>
+#define li long int
+void numero()
+{
+	li p, q;
+	printf("Digite um numero primo p:\n");	
+	scanf("%ld", &p);
+	printf("Digite um numero primo q:\n");	
+	scanf("%ld", &q);
+	primo(p, q);
+
+
+}
+
+
+int primo(li a, li b)
+{
+	li d;
+	int achei= 0, achei2=0;
+	for(d=2; d*d<=a && !achei;d++)
+	{
+		if(a%d==0)
+		{
+			achei = 1;
+			break;
+		}
+	}
+	for(d=2; d*d<=b && !achei2;d++)
+	{
+		if(b%d==0)
+		{
+			achei2 = 1;
+			break;
+		}
+	}
+	if(!achei && !achei2)
+	{
+		printf("Os numeros sao primos\n");
+	}
+	else
+	{
+		printf("Os numeros nao sao primos\n");
+		numero();
+	}
+
+}
+
+
+int main()
+{
+	int option;
+	printf("Digite 1. para criar uma chave:\n");
+	scanf("%d", &option);
+	if(option==1)
+	{
+		numero();
+	}
+
+	return 0;
+}
