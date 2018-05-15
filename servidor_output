@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <stdlib.h>
+#include <strings.h> // coloquei pra bzero
+#include <unistd.h>
+#include <string.h>
+#define SA struct sockaddr
+
+// fiz a echo só pra rodar mesmo mas por enquanto ela não faz nada sem o cliente então ignorem,precisamos saber mais sobre a mesma
+void str_echo(int sockfd)
+{
+	ssize_t n;
+	char buf[4096];
+	FILE *pfile;
+	while(strcmp(buf, "xau") != 0)
+	{
+		printf("aguardando mensagem ...\n");
+
+		read(sockfd,buf,4096);// le oque ele escreve
+		pfile = fopen("log.txt", "w");
+		fputs(buf, pfile);
+		fclose(pfile);
+		printf("Mensagem recebida : %s\n", buf);
+		//printf("Digite uma mensagem : ");
+		//fgets(buf, 4096, stdin);
+		write(sockfd,pfile,50);
+		printf("Mensagem enviada : %s\n", buf);
+	}
+}
+
+int main()
+{
+ 	int meusocket, resposta_server;
+ 	pid_t  criacao_filhos;
+ 	socklen_t tamanho_cliente;
+
+ 	struct sockaddr_in cliaddr, servaddr;
+ 	meusocket = socket(AF_INET, SOCK_STREAM, 0);
+ 	bzero(&servaddr, sizeof(servaddr));
+ 	servaddr.sin_family = AF_INET;
+ 	servaddr.sin_addr.s_addr = INADDR_ANY;
+ 	servaddr.sin_port = htons(9502);
+
+ 	bind(meusocket, (SA*)&servaddr, sizeof(servaddr));
+ 	listen(meusocket, 1024);
+ 
+ 	while(1)
+ 	{
+
+ 		resposta_server = accept( meusocket,(SA*)&cliaddr, &tamanho_cliente);
+ 		if((criacao_filhos = fork()) == 0)
+ 		{
+ 			close(meusocket);
+ 			printf("Cliente conectado com sucesso!\n");
+ 			str_echo(resposta_server);
+ 			exit(0);
+ 		}
+ 		else
+ 		{
+ 			printf("falha no fork!");
+ 		}
+ 		close(resposta_server);
+ 	}
+
+	return 0;
+}
